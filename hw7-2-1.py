@@ -16,8 +16,6 @@ if __name__ == '__main__':
                 break
             if p*q*q <= 100:
                 left_to_check[p*q*q] = 0
-            if p*q*q*q <= 100:
-                left_to_check[p*q*q*q] = 0
     for i in range(101):
         if left_to_check[i]:
             print i
