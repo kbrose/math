@@ -2,11 +2,14 @@ import sys
 import fractions as fr
 INIT = 0
 SUBSEQUENT = 1
+OUTPUT = sys.stdout
+
+# does RREF on a matrix, outputting each step along the way
 def rref(mat):
     curr_row = 0
     max_row = len(mat)
     curr_col = 0
-    max_col = len(mat)+1 # leave out last column
+    max_col = len(mat[0])
     while curr_row != max_row:
         found_one = False
         for j in range(curr_col,max_col):
@@ -23,12 +26,15 @@ def rref(mat):
                     if curr_val != 1:
                         output_tex(mat,SUBSEQUENT)
                     for i2 in range(max_row):
+                        has_changed = False
                         if i2 == curr_row:
                             continue
                         to_remove = mat[i2][j]
                         if to_remove != 0:
                             mat[i2] = [mat[i2][k] - mat[curr_row][k]*to_remove for k in range(len(mat[i2]))]
-                            output_tex(mat,SUBSEQUENT)
+                            has_changed = True
+                    if has_changed:
+                        output_tex(mat,SUBSEQUENT)
                     break
             if found_one:
                 break
@@ -36,32 +42,34 @@ def rref(mat):
         curr_col += 1
     return mat
 
+# outputs matrix in TeX format with align*
 def output_tex(mat,where_to_put):
     if where_to_put == INIT:
-        sys.stdout.write('\t\\begin{align*}\n\t\\begin{bmatrix}\n\t\t')
+        OUTPUT.write('\\begin{align*}\n\t\\begin{bmatrix}\n\t\t')
     else:
-        sys.stdout.write('\t &= \\begin{bmatrix}\n\t\t')
+        OUTPUT.write('\t &= \\begin{bmatrix}\n\t\t')
     for r in range(len(mat)):
         row = mat[r]
         for c in range(len(row)):
             output_str = convert_frac(row[c])
-            sys.stdout.write(output_str)
+            OUTPUT.write(output_str)
             if c < len(row) - 1:
-                sys.stdout.write(' & ')
+                OUTPUT.write(' & ')
             elif r < len(mat) - 1:
-                sys.stdout.write('\\\\\n\t\t')
+                OUTPUT.write('\\\\\n\t\t')
             else:
-                sys.stdout.write('\n\t')
-    sys.stdout.write('\\end{bmatrix}')
+                OUTPUT.write('\n\t')
+    OUTPUT.write('\\end{bmatrix}')
     if where_to_put == SUBSEQUENT:
-        sys.stdout.write('\\\\\n')
+        OUTPUT.write('\\\\\n')
 
+# convert to string, that is
 def convert_frac(frac):
     if frac.denominator == 1:
         return str(frac.numerator)
     if frac.numerator == 0:
         return "0"
-    return str(frac.numerator) + '/' + str(frac.denominator)
+    return "\\frac{" + str(frac.numerator) + '}{' + str(frac.denominator) + "}"
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
@@ -77,6 +85,7 @@ if __name__ == '__main__':
                 to_solve.append(map(lambda x: fr.Fraction(x), ls))
         output_tex(to_solve,INIT)
         rref_mat = rref(to_solve)
-        output_tex(rref_mat,SUBSEQUENT)
-        sys.stdout.write('\t\\end{align*}')
+        # and now we're done, as a side effect of rref
+        # we already output the completed matrix
+        OUTPUT.write('\\end{align*}\n')
 
