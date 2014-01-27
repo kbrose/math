@@ -69,7 +69,7 @@ def convert_frac(frac):
         return str(frac.numerator)
     if frac.numerator == 0:
         return "0"
-    return "\\frac{" + str(frac.numerator) + '}{' + str(frac.denominator) + "}"
+    return + str(frac.numerator) + '/' + str(frac.denominator)
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
