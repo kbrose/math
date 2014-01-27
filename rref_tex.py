@@ -25,8 +25,8 @@ def rref(mat):
                     mat[curr_row] = [k / curr_val for k in mat[curr_row]]
                     if curr_val != 1:
                         output_tex(mat,SUBSEQUENT)
+                    has_changed = False
                     for i2 in range(max_row):
-                        has_changed = False
                         if i2 == curr_row:
                             continue
                         to_remove = mat[i2][j]
@@ -39,7 +39,7 @@ def rref(mat):
             if found_one:
                 break
         curr_row += 1
-        curr_col += 1
+        #curr_col += 1
     return mat
 
 # outputs matrix in TeX format with align*
@@ -47,7 +47,7 @@ def output_tex(mat,where_to_put):
     if where_to_put == INIT:
         OUTPUT.write('\\begin{align*}\n\t\\begin{bmatrix}\n\t\t')
     else:
-        OUTPUT.write('\t &= \\begin{bmatrix}\n\t\t')
+        OUTPUT.write('\t &\\cong \\begin{bmatrix}\n\t\t')
     for r in range(len(mat)):
         row = mat[r]
         for c in range(len(row)):
@@ -69,7 +69,7 @@ def convert_frac(frac):
         return str(frac.numerator)
     if frac.numerator == 0:
         return "0"
-    return + str(frac.numerator) + '/' + str(frac.denominator)
+    return str(frac.numerator) + '/' + str(frac.denominator)
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
