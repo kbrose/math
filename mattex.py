@@ -1,3 +1,12 @@
+"""
+The input file should be of the form
+
+a_1 a_2 a_3
+a_4 a_5 a_6
+a_7 a_8 a_9
+
+where a_i are rational numbers
+"""
 import sys
 import fractions as fr
 OUTPUT = sys.stdout
