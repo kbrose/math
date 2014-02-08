@@ -1,3 +1,5 @@
+from math import log
+
 ### prints the initial distributions as described in write-up
 def show_init(A,B,Pi,states,out_file):
     out_file.write( '---------------------------------\n')
@@ -38,7 +40,7 @@ def gorey_alpha(t,char,to_sum_list,out_file):
         out_file.write('\t\tto state: ' + str(to_state) + '\n')
         for from_state in range(len(to_sum_list[to_state])):
             out_file.write('\t\t\tfrom state   ' + str(from_state))
-            out_file.write('  Alpha: %.4g\n' % to_sum_list[to_state][from_state])    
+            out_file.write('  Alpha: %.4g\n' % to_sum_list[to_state][from_state])
 
 def show_alpha_beta(name,a_or_b,out_file):
     out_file.write(name + ':\n')
@@ -57,7 +59,8 @@ def show_alpha_beta(name,a_or_b,out_file):
         out_file.write('\tTime  ' + str(t) + ':   ' + to_concat + '\n')
     out_file.write('\n')
 
-def sum_of_probs(s,out_file):
+def sum_of_probs(s,iter,out_file):
+    out_file.write('Iteration %d\n' % (iter + 1))
     out_file.write('Sum of probabilities: %.4g\n\n' % s)
 
 def init_soft(out_file):
@@ -72,7 +75,8 @@ def soft_count(letter,count,states,out_file):
         out_file.write('\t\tFrom state: ' + str(from_state) + '\n')
         for to_state in states:
             s += count[from_state][to_state]
-            out_file.write('\t\t\tTo state: ' + str(to_state) + '  ' + '%.4g\n' % count[from_state][to_state])
+            out_file.write('\t\t\tTo state: ' + str(to_state) + 
+                           '  ' + '%.4g\n' % count[from_state][to_state])
     # out_file.write('\t\tSum: ' + '%.4g\n' % s)
 
 def init_emissions(out_file):
@@ -82,11 +86,34 @@ def from_state_output(from_state,out_file):
     out_file.write('\n\tFrom State: ' + str(from_state) + '\n')
 
 def letter_prob(B,states,out_file):
+    out_file.write('Letter probabilities:\n')
     for i in states:
         out_file.write('\tFrom state: ' + str(i) + '\n')
         letters = sorted(B[i].items(), key=lambda x: x[1], reverse=True)
         for letter in letters:
             out_file.write('\t\tLetter \'' + letter[0] + '\': %.4g\n' % letter[1])
+
+domain_fixer = 0.0000001
+
+def other_states_prob(B,i,letter,states):
+    other_states = 0.0
+    for j in states:
+        if j == i:
+            continue
+        other_states += B[j][letter]
+    if other_states == 0.0:
+        return domain_fixer # fixes divide by 0
+    return other_states
+
+def log_letter_prob(B,states,out_file):
+    out_file.write('State Divisions:\n')
+    for i in states:
+        out_file.write('\tAssigned to state ' + str(i) + ':\n')
+        letters = sorted(B[i].items(), key=lambda x: log((x[1] + domain_fixer) / other_states_prob(B,i,x[0],states)), reverse=True)
+        above_0 = filter(lambda x: log((x[1] + domain_fixer) / other_states_prob(B,i,x[0],states)) >= 0, B[i].items())
+        for letter in letters:
+            if letter in above_0: # inefficient, but only done once per program
+                out_file.write('\t\tLetter \'' + letter[0] + '\': %.4g\n' % letter[1])
 
 def max_trans(out_file):
     out_file.write('\nCalculating new transitions:\n')
@@ -95,10 +122,58 @@ def new_A_output(to_state,prev,new,normalizer,out_file):
     out_file.write('\t\tTo state:   ' + str(to_state) + 
                    ' prob: %.4g (%.4g over %.4g)\n' % (new,prev,normalizer))
 
+def A_output(A,states,out_file):
+    out_file.write('\nTransition Probabilities:')
+    for from_state in states:
+        from_state_output(from_state,out_file)
+        for to_state in states:
+            out_file.write('\t\tTo state:   ' + str(to_state) + 
+                           ' prob: %.4g\n' % (A[from_state][to_state]))
+
 def max_Pi(out_file):
     out_file.write('\nCalculating new Pi:\n')
 
 def show_Pi(Pi,out_file):
+    out_file.write('\nPi values:\n')
     for state in range(len(Pi)):
         out_file.write('\tState  ' + str(state) + '   %.4g\n' % Pi[state])
+
+def init_viterbi(delta,word,states,out_file):
+    out_file.write('----------------------------\n')
+    out_file.write('      Viterbi Path \n')
+    out_file.write('----------------------------\n')
+    out_file.write(word + '\n\n')
+    for i in states:
+        out_file.write('Delta[1] of state ' + str(i) + ': ' + str(delta[i][0]) + '\n')
+    out_file.write('\n')
+
+def viterbi_time(t,l,out_file):
+    out_file.write('Time ' + str(t) + ': letter ' + l + '\n')
+
+def viterbi_step(come_from,s,t,themax,states,out_file):
+    out_file.write('\tat state ' + str(s) + ':\n')
+    for state in states:
+        out_file.write('\t\tfrom state ' + str(state) + ': %.4g\n' % come_from[state][0])
+    out_file.write('\tbest to come from ' + str(themax[1]) + ' (at %.4g)\n\n' % themax[0])
+
+def viterbi_path(path,out_file):
+    out_file.write('Viterbi path:\n')
+    out_file.write('time :')
+    for t in range(len(path)):
+        out_file.write('\t' + str(t))
+    out_file.write('\n')
+    out_file.write('state:')
+    for t in range(len(path)):
+        out_file.write('\t' + str(path[t]))
+    out_file.write('\n')
+
+
+
+
+
+
+
+
+
+
 
