@@ -1,3 +1,9 @@
+### EXAMPLES:
+### > (i j k)^2
+### (i k j)
+### > (1 2 3 4 5)(5 3 1)(2 4)
+### (1 4 3 2)
+
 import sys
 
 def decomp(done, cycles):
@@ -66,7 +72,7 @@ def show_decomp(cycles):
     print ''
 
 def main():
-    i = raw_input()
+    i = raw_input('> ')
     if i in ['quit', 'q']:
         quit()
     cycles = format(i)
@@ -74,6 +80,7 @@ def main():
     main()
 
 if __name__ == '__main__':
+    print 'Type \"q\" or \"quit\" to quit.'
     main()
 
 
