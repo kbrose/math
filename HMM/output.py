@@ -1,4 +1,5 @@
 from math import log
+import matplotlib.pyplot as plt
 
 ### prints the initial distributions as described in write-up
 def show_init(A,B,Pi,states,out_file):
@@ -167,6 +168,24 @@ def viterbi_path(path,out_file):
         out_file.write('\t' + str(path[t]))
     out_file.write('\n')
 
+def Plot2D(data,sum_of_probs,sum_of_probs_list,out_file):
+    x = [d[0] for d in data]
+    y = [d[1] for d in data]
+    min_val = min(sum_of_probs_list)
+    max_val = max(sum_of_probs_list)
+    fixed_probs = [(p - min_val) / (max_val - min_val) for p in sum_of_probs_list]
+    colors = plt.cm.coolwarm(fixed_probs)
+
+    plt.scatter(x,y,c=colors,edgecolors=colors,s=30,marker='+')
+
+    plt.xlabel('Transition from 0 to 1')
+    plt.ylabel('Transition from 1 to 0')
+    plt.title('Transition probabilities - total probability of %.4g' % sum_of_probs)
+    plt.xlim(0,1)
+    plt.ylim(0,1)
+
+    plt.savefig(out_file)
+    plt.close()
 
 
 

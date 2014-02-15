@@ -7,7 +7,7 @@ import output
 class HMM:
     ### takes a list of letters and the number of states
     ### and returns the initial distibutions A, B, and Pi
-    def __init__(self, letters, words, states, out, VERBOSE_FLAG):
+    def __init__(self, letters, words, states, out, out_pdf, VERBOSE_FLAG):
         # transition probabilities
         self.A = [[0 for i in states] for i in states]
         for i in states:
@@ -46,8 +46,11 @@ class HMM:
         self.counts = {}
         self.states = states
         self.out = out
+        self.out_pdf = out_pdf
         self.words = words
-        self.sum_of_probs = 0
+        self.sum_of_probs = 0.0
+        self.sum_of_probs_list = [0.0]
+        self.trans_list = []
         self.VERBOSE_FLAG = VERBOSE_FLAG
 
         #if self.VERBOSE_FLAG:
@@ -85,9 +88,9 @@ class HMM:
         return alpha, beta
 
     ### computes the soft count of the given word, i.e.
-    ###                    alpha[t][i]*A[i][j]*B[i][letter]*beta[t+1][j]
-    ### counts[t][i][j] =  ---------------------------------------------
-    ###                            probability of whole word
+    ###                     alpha[t][i]*A[i][j]*B[i][word[t]]*beta[t+1][j]
+    ### counts[t][i][j] =  ------------------------------------------------
+    ###                    probability of whole word = sum_j(alpha[T-1][j])
     def soft_count(self,word):
         if self.VERBOSE_FLAG:
             output.init_soft(self.out)
@@ -216,7 +219,8 @@ class HMM:
     ### cycles through the HMM until one of the given stop
     ### condition causes it to, well, stop.
     def cycle(self,max_iters,min_change):
-        for i in range(max_iters): # part 1
+        self.trans_list = [(self.A[0][1],self.A[1][0])]
+        for i in range(max_iters):
             sum_of_probs = 0.0
             for word in self.words:
                 alpha, unused_beta = self.forward_backward(word)
@@ -228,6 +232,7 @@ class HMM:
             if diff < min_change:
                 break
             self.sum_of_probs = sum_of_probs
+            self.sum_of_probs_list.append(self.sum_of_probs)
 
             for word in self.words:
                 self.counts[word] = self.soft_count(word)
@@ -238,6 +243,7 @@ class HMM:
             self.B = new_B_values
             self.A = new_A_values
             self.Pi = new_Pi_values
+            self.trans_list.append((self.A[0][1],self.A[1][0]))
 
         if self.VERBOSE_FLAG:
             output.letter_prob(self.B,self.states,self.out)
@@ -246,4 +252,6 @@ class HMM:
         output.show_Pi(self.Pi,self.out)
         output.sum_of_probs(sum_of_probs,i,self.out)
 
+    def make_plot(self):
+        output.Plot2D(self.trans_list, self.sum_of_probs, self.sum_of_probs_list, self.out_pdf)
 
