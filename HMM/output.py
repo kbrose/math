@@ -110,8 +110,11 @@ def log_letter_prob(B,states,out_file):
     out_file.write('State Divisions:\n')
     for i in states:
         out_file.write('\tAssigned to state ' + str(i) + ':\n')
-        letters = sorted(B[i].items(), key=lambda x: log((x[1] + domain_fixer) / other_states_prob(B,i,x[0],states)), reverse=True)
-        above_0 = filter(lambda x: log((x[1] + domain_fixer) / other_states_prob(B,i,x[0],states)) >= 0, B[i].items())
+        letters = sorted(B[i].items(), 
+                         key=lambda x: log((x[1] + domain_fixer) / other_states_prob(B,i,x[0],states)), 
+                         reverse=True)
+        above_0 = filter(lambda x: log((x[1] + domain_fixer) / other_states_prob(B,i,x[0],states)) >= 0, 
+                         B[i].items())
         for letter in letters:
             if letter in above_0: # inefficient, but only done once per program
                 out_file.write('\t\tLetter \'' + letter[0] + '\': %.4g\n' % letter[1])
