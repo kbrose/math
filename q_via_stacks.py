@@ -2,7 +2,9 @@
 ### The cost of any sequence of n commands
 ### of enqueue and dequeue will be O(n).
 ### This bound comes from -amortized-
-### cost analysis.
+### cost analysis, and unfortunately is not quite
+### correct. This bound is true only when assuming
+### that dequeueing the empty buffer is free.
 
 class Queue:
     def __init__(self,initial_list=[]):
