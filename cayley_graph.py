@@ -1,6 +1,9 @@
 import sys
 from knuth_bendix import knuth_bendix
 
+#TODO: Use subgraphs with attribute edge [dir=none]
+#      to allow for undirected edges
+
 generators = ['a','b']
 relators = [['a',2,'',0],['b',5,'',0],['ab',3,'',0]]
 
@@ -21,7 +24,6 @@ class cayley_graph:
         while to_visit != []:
             curr_pair = to_visit.pop() #order does not matter
             curr = curr_pair[0]
-            have_visited.add(self.simplify(curr))
             if curr_pair[1] > self.MAX_RECURSE_LEVELS:
                 sys.stderr.write("Reached maximum recursion depth, stopping.\n")
                 quit()
@@ -37,8 +39,9 @@ class cayley_graph:
                 else:
                     outfile.write(self.tab + curr + ' -> ' + prod + 
                                 ' [label="' + gen + '"]\n')
-                if not (prod in to_visit or prod in have_visited):
+                if not prod in ([x[0] for x in to_visit] + list(have_visited)):
                     to_visit.append([prod,curr_pair[1] + 1])
+            have_visited.add(self.simplify(curr))
 
 
 if __name__ == '__main__':
