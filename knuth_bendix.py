@@ -53,6 +53,10 @@ class knuth_bendix:
                     a = change
         return a
 
+    # for outside world's use
+    def simplify(self,a):
+        return self.reduce_all(a)
+
     # replaces all current reductions with any other reductions possible.
     def update_reds(self):
         changes_made = True
@@ -73,6 +77,7 @@ class knuth_bendix:
         self.iters = 0
         while self.more_to_check:
             self.more_to_check = False
+            self.iters += 1
             if self.iters > self.MAX_DEPTH:
                 sys.stderr.write('Reached maximum iteration depth, quitting\n')
                 quit()
@@ -115,7 +120,3 @@ class knuth_bendix:
             print ('"' + red[0] + '" ' + '-'*(max_len - len(red[0]) + 1)
              + '-> ' + '"' + red[1] + '"')
 
-
-# relators = [['x',3,'',0],['y',5,'',0],['xy',3,'',0]]
-# a = knuth_bendix(relators,100)
-# a.show_reds()
