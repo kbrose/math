@@ -43,8 +43,14 @@ class knuth_bendix:
 
     # reduce the word "a" using all known rules
     def reduce_all(self,a):
-        for red in self.reductions:
-            a = self.reduce_given(a,red)
+        changes_made = True
+        while changes_made:
+            changes_made = False
+            for red in self.reductions:
+                change = self.reduce_given(a,red)
+                if a != change:
+                    changes_made = True
+                    a = change
         return a
 
     # replaces all current reductions with any other reductions possible.

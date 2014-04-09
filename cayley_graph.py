@@ -24,6 +24,8 @@ class cayley_graph:
         while to_visit != []:
             curr_pair = to_visit.pop() #order does not matter
             curr = curr_pair[0]
+            if curr == 'aababbbab':
+                print 'here 2'
             if curr_pair[1] > self.MAX_RECURSE_LEVELS:
                 sys.stderr.write("Reached maximum recursion depth, stopping.\n")
                 quit()
@@ -41,12 +43,12 @@ class cayley_graph:
                                 ' [label="' + gen + '"]\n')
                 if not prod in ([x[0] for x in to_visit] + list(have_visited)):
                     to_visit.append([prod,curr_pair[1] + 1])
-            have_visited.add(self.simplify(curr))
+            have_visited.add(curr)
 
 
 if __name__ == '__main__':
     outfile.write('digraph G {\noverlap=scale\n')
     c = cayley_graph(generators,relators,100)
     c.draw_cayley(outfile)
-    outfile.write('}\n')            
+    outfile.write('}\n')     
 
