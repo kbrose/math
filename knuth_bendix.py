@@ -34,7 +34,7 @@ class knuth_bendix:
         return a
 
     # reduce the word "a" using all known rules, EXCEPT itself
-    def reduce_all_1(self,a):
+    def reduce_almost_all(self,a):
         for red in self.reductions:
             if red[0] == a:
                 continue
@@ -42,7 +42,7 @@ class knuth_bendix:
         return a
 
     # reduce the word "a" using all known rules
-    def reduce_all_2(self,a):
+    def reduce_all(self,a):
         for red in self.reductions:
             a = self.reduce_given(a,red)
         return a
@@ -54,8 +54,8 @@ class knuth_bendix:
             changes_made = False
             reductions_copy = self.reductions.copy()
             for red in reductions_copy:
-                red1_reduced = self.reduce_all_2(red[1])
-                red0_reduced = self.reduce_all_1(red[0])
+                red1_reduced = self.reduce_all(red[1])
+                red0_reduced = self.reduce_almost_all(red[0])
                 if red1_reduced != red[1] or red0_reduced != red[0]:
                     changes_made = True
                 self.reductions.remove(red)
@@ -101,15 +101,15 @@ class knuth_bendix:
                 return (a[:-i], b[:i], b[i:])
         return False
 
-
     def show_reds(self):
         max_len = 0
         for red in self.reductions:
             max_len = max(len(red[0]),max_len)
         for red in self.reductions:
-            print ('"' + red[0] + '" ' + '-'*(max_len - len(red[0]))
+            print ('"' + red[0] + '" ' + '-'*(max_len - len(red[0]) + 1)
              + '-> ' + '"' + red[1] + '"')
 
 
-relators = [['x',3,'',0],['y',3,'',0],['xy',3,'',0]]
-a = knuth_bendix(relators,100)
+# relators = [['x',3,'',0],['y',5,'',0],['xy',3,'',0]]
+# a = knuth_bendix(relators,100)
+# a.show_reds()
