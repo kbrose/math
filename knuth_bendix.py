@@ -11,6 +11,7 @@ class knuth_bendix:
             self.add_red(p,q)
         self.update_reds()
         self.expand_reds()
+        self.show_reds()
 
     # add the reduction p -> q in sorted order (q < p)
     def add_red(self,p,q):

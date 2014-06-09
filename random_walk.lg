@@ -1,0 +1,13 @@
+to myfunc :depth :side
+ if :depth = 30 [stop]
+ lt 30
+ fd :side
+ myfunc (:depth + 1) :side
+ fd -:side
+ rt 60
+ fd :side
+ myfunc (:depth + 1) :side
+ fd -:side
+ lt 30
+end
+
