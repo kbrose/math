@@ -49,8 +49,11 @@ with open(f_name,'r') as f_in:
             rl = f_in.readline().strip().split()
             atoms.append([x * SCALE for x in [float(rl[0]), float(rl[1]), float(rl[2])]])
         for i in range(numBonds):
-            rl = f_in.readline().strip().split()
-            bonds.append([int(rl[0]) - 1, int(rl[1]) - 1, int(rl[2])])
+            rl = f_in.readline()
+            b1 = int(rl[0:3])
+            b2 = int(rl[3:6])
+            b3 = int(rl[6:9])
+            bonds.append([b1 - 1, b2 - 1, b3])
             # bond = [a,b,c] ==> a connects to b with c = number of bonds
             # minus 1 to account for one-vs-zero indexing
         minDist = linalg.norm(matrix(atoms[0]) - matrix(atoms[1]))
