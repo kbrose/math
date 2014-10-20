@@ -36,7 +36,8 @@ with open(f_name,'r') as f_in:
     with open(f_name[0:len(f_name)-4] + '.scad', 'w') as f_out:
         rl = f_in.readline().strip()
         f_out.write('/* ' + rl + ' */\n')
-        while not rl[0] in '1234567890': # skip past header lines
+        rl = f_in.readline().strip()
+        while len(rl) == 0 or not rl[0] in '1234567890': # skip past header lines
             rl = f_in.readline().strip()
         if not 'V2000' in rl:
             sys.stderr.write('Warning: ' + f_name + ' does not appear to be a V2000 .mol file.\n')
@@ -60,10 +61,10 @@ with open(f_name,'r') as f_in:
                 dist = linalg.norm(matrix(a1) - matrix(a2))
                 if dist < minDist:
                     minDist = dist
-        rSphere = str(minDist / 3.5)
+        rSphere = str(minDist / 3)
         rCyl = str(minDist / 20.)
         atomsStart = set([b[0] for b in bonds]) #these atoms are the start of some bond
-        atomsNoStart = set(range(len(bonds))).difference(atomsStart) # these are not.
+        atomsNoStart = set(range(len(atoms))).difference(atomsStart) # these are not.
         for i in atomsNoStart:
             f_out.write(atomSphere(atoms[i],rSphere))
         f_out.write('\n')
@@ -84,34 +85,27 @@ with open(f_name,'r') as f_in:
                         f_out.write(cyl + '\n\t')
                         f_out.write('}\n')
                     if b[2] == 2:
-                        f_out.write('\t' + translateSCAD([-float(rSphere)/3.,0,0]) + '{\n\t\t')
                         f_out.write(rot + '{\n\t\t\t')
+                        f_out.write(translateSCAD([-float(rSphere)/3.,0,0]) + '{\n\t\t')
                         f_out.write(cyl + '\n\t\t')
-                        f_out.write('}\n\t')
-                        f_out.write('}\n')
-                        f_out.write('\t' + translateSCAD([float(rSphere)/3.,0,0]) + '{\n\t\t')
-                        f_out.write(rot + '{\n\t\t\t')
+                        f_out.write('}\n\t\t')
+                        f_out.write(translateSCAD([float(rSphere)/3.,0,0]) + '{\n\t\t')
                         f_out.write(cyl + '\n\t\t')
                         f_out.write('}\n\t')
                         f_out.write('}\n')
                     if b[2] == 3:
-                        sqrt3over4 = 3**.5 / 4.
-                        f_out.write('\t' + translateSCAD([-float(rSphere)*.35,0,-float(rSphere)*sqrt3over4*.7]) + '{\n\t\t')
+                        sqrt3over4 = 3**.5 / 4
                         f_out.write(rot + '{\n\t\t\t')
+                        f_out.write(translateSCAD([-float(rSphere)*.4,0,-float(rSphere)*sqrt3over4*.8]) + '{\n\t\t')
+                        f_out.write(cyl + '\n\t\t')
+                        f_out.write('}\n\t\t')
+                        f_out.write(translateSCAD([0,0,float(rSphere)*sqrt3over4]) + '{\n\t\t')
+                        f_out.write(cyl + '\n\t\t')
+                        f_out.write('}\n\t')
+                        f_out.write(translateSCAD([.4*float(rSphere),0,-float(rSphere)*sqrt3over4*.8]) + '{\n\t\t')
                         f_out.write(cyl + '\n\t\t')
                         f_out.write('}\n\t')
                         f_out.write('}\n')
-                        f_out.write('\t' + translateSCAD([0,0,float(rSphere)*sqrt3over4]) + '{\n\t\t')
-                        f_out.write(rot + '{\n\t\t\t')
-                        f_out.write(cyl + '\n\t\t')
-                        f_out.write('}\n\t')
-                        f_out.write('}\n')
-                        f_out.write('\t' + translateSCAD([.35*float(rSphere),0,-float(rSphere)*sqrt3over4*.7]) + '{\n\t\t')
-                        f_out.write(rot + '{\n\t\t\t')
-                        f_out.write(cyl + '\n\t\t')
-                        f_out.write('}\n\t')
-                        f_out.write('}\n')
-
             f_out.write('}\n\n')
 
 
